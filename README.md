@@ -2,7 +2,7 @@
 
 ## Folder Structure
 
-    RMI_Calculator/
+    RMI_STUDENT PORTAL/
     |-- src/
     | |-- server/
     | | |-- DbStudentPortalImpl.java // Remote interface implementation
