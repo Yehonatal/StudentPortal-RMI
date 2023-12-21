@@ -17,15 +17,20 @@
     |   |
     |   |-- client/
     |   |   |-- RMIClient.java
+    |   |   |
     |   |   |-- GUI/
     |   |   |   |-- admin/
-    |   |   |   |   |-- AdminPanel.java       // Admin functionality GUI
+    |   |   |   |   |-- AdminDashboard.java       // Admin main dashboard
+    |   |   |   |   |-- ManageCoursesPanel.java   // Admin course management GUI
+    |   |   |   |   |-- ManageAccountsPanel.java  // Admin account management GUI
     |   |   |   |
     |   |   |   |-- student/
-    |   |   |   |   |-- StudentPanel.java     // Student functionality GUI
+    |   |   |   |   |-- StudentDashboard.java     // Student main dashboard
+    |   |   |   |   |-- EnrollInCoursePanel.java  // Student course enrollment GUI
+    |   |   |   |   |-- ViewPersonalInfoPanel.java // Student personal information GUI
     |   |   |   |
     |   |   |   |-- LoginPanel.java
-    |   |   |   |-- CreateAccount.java
+    |   |   |   |-- CreateAccountPanel.java
     |   |   |
     |   |   |-- service/
     |   |       |-- StudentService.java       // Interface for student-related functionalities

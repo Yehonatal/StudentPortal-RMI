@@ -15,7 +15,6 @@ public class DbStudentPortalImpl extends UnicastRemoteObject implements DbStuden
     public Connection conn = null;
     public Statement statement = null;
     public PreparedStatement prepStatement = null;
-    public String query = "";
 
 
     protected DbStudentPortalImpl() throws RemoteException {

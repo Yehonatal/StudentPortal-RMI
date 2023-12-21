@@ -1,5 +1,5 @@
 package client.GUI.admin;
 
-public class AdminPanel {
+public class AdminDashboard {
     
 }
