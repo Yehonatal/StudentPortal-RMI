@@ -1,5 +1,5 @@
 package client.GUI.student;
 
-public class studentPanel {
+public class StudentPanel {
     
 }

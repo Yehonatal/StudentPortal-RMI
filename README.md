@@ -4,33 +4,41 @@
 
     RMI_STUDENT PORTAL/
     |-- src/
-    | |-- server/
-    | | |-- DbStudentPortalImpl.java // Remote interface implementation
-    | | |-- DbStudentPortal.java // Remote interface
-    | | |-- DbConnector.java // Db connector
-    | | |-- RMIServer.java // RMI server
-    | | |
-    | | |-- object/
-    | | | |-- Admin.java
-    | | | |-- Course.java
-    | | | |-- Student.java
-    |
-    | |-- client/
-    | | |-- RMIClient.java // RMI client
-    | | |-- GUI/
-    | | | |-- admin /
-    | | | | |-- adminPanel.java
-    | | | |
-    | | | |-- student /
-    | | | | |-- studentPanel.java
-    | | |
-    | | |-- LoginPanel.java
-    | | |-- CreateAccount.java
-    |
-    | |-- .env
+    |   |-- server/
+    |   |   |-- DbStudentPortalImpl.java
+    |   |   |-- DbStudentPortal.java
+    |   |   |-- DbConnector.java
+    |   |   |-- RMIServer.java
+    |   |   |
+    |   |   |-- object/
+    |   |       |-- Admin.java
+    |   |       |-- Course.java
+    |   |       |-- Student.java
+    |   |
+    |   |-- client/
+    |   |   |-- RMIClient.java
+    |   |   |-- GUI/
+    |   |   |   |-- admin/
+    |   |   |   |   |-- AdminPanel.java       // Admin functionality GUI
+    |   |   |   |
+    |   |   |   |-- student/
+    |   |   |   |   |-- StudentPanel.java     // Student functionality GUI
+    |   |   |   |
+    |   |   |   |-- LoginPanel.java
+    |   |   |   |-- CreateAccount.java
+    |   |   |
+    |   |   |-- service/
+    |   |       |-- StudentService.java       // Interface for student-related functionalities
+    |   |       |-- AdminService.java         // Interface for admin-related functionalities
+    |   |       |
+    |   |       |-- impl/
+    |   |           |-- StudentServiceImpl.java // Implementation of StudentService
+    |   |           |-- AdminServiceImpl.java   // Implementation of AdminService
+    |   |
+    |   |-- .env
     |
     |-- build/
-    | |-- (compiled .class files)
+    |   |-- (compiled .class files)
     |
     |-- README.md
 
