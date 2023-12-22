@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import server.objects.Admin;
 import server.objects.Course;
+import server.objects.LoginData;
 import server.objects.Student;
 
 public class DbStudentPortalImpl
@@ -335,5 +336,17 @@ public class DbStudentPortalImpl
     } catch (SQLException e) {
       e.printStackTrace();
     }
+  }
+
+  @Override
+  public boolean getLoginStatus(LoginData data) throws RemoteException {
+    DbAccess access = new DbAccess(
+      data.getAccessType(),
+      data.getUserType(),
+      data.getUsername(),
+      data.getPassword()
+    );
+
+    return access.dbAccessor();
   }
 }

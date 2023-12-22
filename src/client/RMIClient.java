@@ -1,6 +1,5 @@
 package client;
 
-import client.GUI.LoginPanel;
 import io.github.cdimascio.dotenv.Dotenv;
 import java.rmi.Naming;
 import javax.swing.SwingUtilities;
@@ -28,7 +27,7 @@ public class RMIClient {
       new Runnable() {
         public void run() {
           try {
-            new LoginPanel();
+            new App();
           } catch (Exception e) {
             e.printStackTrace();
           }
