@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import server.objects.Admin;
 import server.objects.Course;
+import server.objects.Enroll;
 import server.objects.LoginData;
 import server.objects.Student;
 
@@ -28,9 +29,10 @@ public class DbStudentPortalImpl
 
   // Constant queries
   // Constants for table and column names
-  private static final String TABLE_ADMIN = "Admin";
-  private static final String TABLE_STUDENT = "Student";
-  private static final String TABLE_COURSE = "Course";
+  private static final String TABLE_ADMIN = "AdminLog";
+  private static final String TABLE_STUDENT = "StudentLog";
+  private static final String TABLE_COURSE = "CoursesLog";
+  private static final String TABLE_ENROLL = "EnrollmentsLog";
 
   private static final String COLUMN_ADMIN_ID = "adminId";
   private static final String COLUMN_STUDENT_ID = "studentId";
@@ -81,6 +83,11 @@ public class DbStudentPortalImpl
     " SET column1 = ?, column2 = ... WHERE " +
     COLUMN_COURSE_ID +
     " = ?";
+
+  private static final String QUERY_ENROLL_TO_COURSE =
+    "INSERT INTO " +
+    TABLE_ENROLL +
+    " (column1, column2, ...) VALUES (?, ?, ...)";
 
   @Override
   public List<Admin> retrieveAdmins() throws RemoteException {
@@ -332,6 +339,25 @@ public class DbStudentPortalImpl
       preparedStatement.setInt(4, course.getCourseId());
 
       // Execute the UPDATE query
+      preparedStatement.executeUpdate();
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+  }
+
+  @Override
+  public void enrollToCourse(Enroll enroll) throws RemoteException {
+    try (
+      Connection connection = DbConnector.getConnection();
+      PreparedStatement preparedStatement = connection.prepareStatement(
+        QUERY_ENROLL_TO_COURSE
+      )
+    ) {
+      preparedStatement.setInt(1, enroll.getCourseId());
+      preparedStatement.setInt(2, enroll.getStudentId());
+      preparedStatement.setString(3, enroll.getGrade());
+
+      // Execute the INSERT query
       preparedStatement.executeUpdate();
     } catch (SQLException e) {
       e.printStackTrace();

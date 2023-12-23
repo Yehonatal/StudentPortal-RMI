@@ -5,6 +5,7 @@ import java.rmi.RemoteException;
 import java.util.List;
 import server.objects.Admin;
 import server.objects.Course;
+import server.objects.Enroll;
 import server.objects.LoginData;
 import server.objects.Student;
 
@@ -27,6 +28,9 @@ public interface DbStudentPortal extends Remote {
   void updateAdmin(Admin admin) throws RemoteException;
   void updateStudent(Student student) throws RemoteException;
   void updateCourse(Course course) throws RemoteException;
+
+  // enroll to courses
+  void enrollToCourse(Enroll enroll) throws RemoteException;
 
   // login methods
   boolean getLoginStatus(LoginData data) throws RemoteException;
