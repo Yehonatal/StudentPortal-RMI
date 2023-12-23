@@ -7,7 +7,8 @@ public class DbAccess {
   private Connection conn;
   private String accessType;
   private String userType;
-  private String userName;
+  private String firstName;
+  private String lastName;
   private String password;
 
   public DbAccess(
@@ -18,7 +19,15 @@ public class DbAccess {
   ) {
     this.accessType = accessType.toLowerCase();
     this.userType = userType.toLowerCase();
-    this.userName = userName.toLowerCase();
+    String[] names = userName.split(" ");
+    if (names.length >= 2) {
+      this.firstName = names[0].toLowerCase();
+      this.lastName = names[1].toLowerCase();
+    } else {
+      this.firstName = userName.toLowerCase();
+      this.lastName = "";
+    }
+
     this.password = userPsw.toLowerCase();
     try {
       conn = DbConnector.getConnection();
@@ -32,42 +41,46 @@ public class DbAccess {
     switch (userType) {
       case "admin":
         if (accessType.equals("select")) {
-          return selectData("adminUserName", "adminUserPsw", "AdminLog");
+          return selectData("password", "AdminLog");
         }
         break;
       case "student":
         if (accessType.equals("select")) {
-          return selectData("studentName", "studentId", "StudentLog");
+          return selectData("password", "StudentLog");
         }
         break;
     }
     return false;
   }
 
-  public boolean selectData(String user, String psw, String table) {
+  public boolean selectData(String psw, String table) {
     System.out.println("from select Data");
-    System.out.println(userName + " " + password);
+    System.out.println(firstName);
 
     ResultSet result;
     try {
       PreparedStatement preparedStatement = conn.prepareStatement(
         String.format(
-          "SELECT * FROM %s WHERE %s = ? AND %s = ?",
+          "SELECT * FROM %s WHERE firstName = ? AND lastName = ? AND %s = ?",
           table,
-          user,
           psw
         )
       );
-      preparedStatement.setString(1, password);
-      preparedStatement.setString(2, userName);
+      preparedStatement.setString(1, firstName.toLowerCase());
+      preparedStatement.setString(2, lastName.toLowerCase());
+      preparedStatement.setString(3, password);
+
       result = preparedStatement.executeQuery();
+
       if (result.next()) {
+        // If a row is found, return true
         System.out.println("from the select data result found condition");
         return true;
       }
     } catch (SQLException e) {
       e.printStackTrace();
     }
+    // If no row is found or an exception occurs, return false
     return false;
   }
 }

@@ -129,7 +129,6 @@ public class LoginPanel extends JPanel {
               username,
               password
             );
-            System.out.println(userType.toString().trim());
             try {
               result = studentPortalService.getLoginStatus(data);
             } catch (RemoteException e1) {

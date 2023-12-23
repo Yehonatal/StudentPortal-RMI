@@ -36,14 +36,14 @@ CREATE TABLE EnrollmentsLog (
 -- Dummy Data for AdminLog
 INSERT INTO AdminLog (firstName, lastName, email, password)
 VALUES
-    ('John', 'Doe', 'john.doe@example.com', 'admin123'),
-    ('Jane', 'Smith', 'jane.smith@example.com', 'admin456');
+    ('john', 'doe', 'john.doe@example.com', 'admin123'),
+    ('jane', 'smith', 'jane.smith@example.com', 'admin456');
 
 -- Dummy Data for StudentLog
 INSERT INTO StudentLog (firstName, lastName, email, password)
 VALUES
-    ('Alice', 'Johnson', 'alice.johnson@example.com', 'student123'),
-    ('Bob', 'Williams', 'bob.williams@example.com', 'student456');
+    ('alice', 'johnson', 'alice.johnson@example.com', 'student123'),
+    ('bob', 'williams', 'bob.williams@example.com', 'student456');
 
 -- Dummy Data for CoursesLog
 INSERT INTO CoursesLog (courseTitle, courseCode, courseCredit)

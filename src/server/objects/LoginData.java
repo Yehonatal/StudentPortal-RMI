@@ -42,10 +42,10 @@ public class LoginData implements Serializable {
   }
 
   public String getPassword() {
-    return this.username;
+    return this.password;
   }
 
   public String getUsername() {
-    return this.password;
+    return this.username;
   }
 }
