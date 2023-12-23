@@ -23,13 +23,9 @@
     |   |   |-- GUI/
     |   |   |   |-- admin/
     |   |   |   |   |-- AdminDashboard.java       // Admin main dashboard
-    |   |   |   |   |-- ManageCoursesPanel.java   // Admin course management GUI
-    |   |   |   |   |-- ManageAccountsPanel.java  // Admin account management GUI
     |   |   |   |
     |   |   |   |-- student/
     |   |   |   |   |-- StudentDashboard.java     // Student main dashboard
-    |   |   |   |   |-- EnrollInCoursePanel.java  // Student course enrollment GUI
-    |   |   |   |   |-- ViewPersonalInfoPanel.java // Student personal information GUI
     |   |   |   |
     |   |   |   |-- LoginPanel.java
     |   |   |   |-- CreateAccountPanel.java

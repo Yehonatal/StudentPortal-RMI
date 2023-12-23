@@ -1,6 +1,8 @@
 package client.GUI;
 
 import client.App;
+import client.GUI.admin.AdminDashboard;
+import client.GUI.student.StudentDashboard;
 import client.RMIClient;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -139,10 +141,12 @@ public class LoginPanel extends JPanel {
 
               // Switch to the appropriate panel based on user type
               if (adminCheckBox.isSelected()) {
-                // parentApp.switchPanel(new AdminPanel(parentApp));
+                parentApp.switchPanel(new AdminDashboard(parentApp));
                 System.out.println("to admin side");
               } else if (studentCheckBox.isSelected()) {
-                // parentApp.switchPanel(new StudentPanel(parentApp, password));
+                parentApp.switchPanel(
+                  new StudentDashboard(parentApp, password)
+                );
                 System.out.println("to student side");
               }
             } else {
