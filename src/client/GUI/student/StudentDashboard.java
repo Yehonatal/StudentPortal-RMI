@@ -12,6 +12,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import server.DbStudentPortal;
 import server.objects.Course;
+import server.objects.Enroll;
 import server.objects.Enrolled;
 
 public class StudentDashboard extends JPanel {
@@ -115,9 +116,10 @@ public class StudentDashboard extends JPanel {
     coursesEnrolled = studentPortalService.retrieveCoursesEnrolled(studId);
 
     DefaultTableModel studentsEnrolledModel = (DefaultTableModel) enrolledCoursesTable.getModel();
-
+    // Clear existing rows from the table
+    studentsEnrolledModel.setRowCount(0);
     for (Enrolled courseEnrolled : coursesEnrolled) {
-      System.out.println("Enrolled Course: " + courseEnrolled); // Debug print
+      // System.out.println("Enrolled Course: " + courseEnrolled); // Debug print
 
       studentsEnrolledModel.addRow(
         new Object[] {
@@ -148,7 +150,17 @@ public class StudentDashboard extends JPanel {
 
     JPanel enrollFormPanel = new JPanel(new FlowLayout());
     courseCodeField = new JTextField(20);
-    enrollButton = createButton("Enroll", e -> enrollInCourse());
+    enrollButton =
+      createButton(
+        "Enroll",
+        e -> {
+          try {
+            enrollInCourse();
+          } catch (RemoteException e1) {
+            e1.printStackTrace();
+          }
+        }
+      );
     enrollFormPanel.add(new JLabel("Enter Course Code:"));
     enrollFormPanel.add(courseCodeField);
     enrollFormPanel.add(enrollButton);
@@ -181,7 +193,24 @@ public class StudentDashboard extends JPanel {
     }
   }
 
-  private void enrollInCourse() {
-    // TODO: ENROLL IN COURSE IMPLEMENTATION
+  private void enrollInCourse() throws RemoteException {
+    int courseCode = Integer.parseInt(courseCodeField.getText());
+
+    Enroll enroll = new Enroll(courseCode, studId);
+
+    studentPortalService.enrollToCourse(enroll);
+
+    clearFormFields(courseCodeField);
+    populateEnrolledCoursesTable();
+  }
+
+  private void clearFormFields(Component... components) {
+    for (Component component : components) {
+      if (component instanceof JTextField) {
+        ((JTextField) component).setText("");
+      } else if (component instanceof JCheckBox) {
+        ((JCheckBox) component).setSelected(false);
+      }
+    }
   }
 }

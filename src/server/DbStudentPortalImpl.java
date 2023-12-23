@@ -214,7 +214,7 @@ public class DbStudentPortalImpl
     } catch (SQLException e) {
       e.printStackTrace();
     }
-    System.out.println("Retrieved Enrolled courses: " + courses + " " + studId);
+    // System.out.println("Retrieved Enrolled courses: " + courses + " " + studId);
     return courses;
   }
 
@@ -279,7 +279,7 @@ public class DbStudentPortalImpl
 
       // Execute the INSERT query
       preparedStatement.executeUpdate();
-      System.out.println("Created student :)");
+      // System.out.println("Created student :)");
     } catch (SQLException e) {
       e.printStackTrace();
     }
@@ -299,7 +299,7 @@ public class DbStudentPortalImpl
 
       // Execute the INSERT query
       preparedStatement.executeUpdate();
-      System.out.println("Course Created :)");
+      // System.out.println("Course Created :)");
     } catch (SQLException e) {
       e.printStackTrace();
     }
@@ -432,7 +432,7 @@ public class DbStudentPortalImpl
 
       // Execute the INSERT query
       preparedStatement.executeUpdate();
-      System.out.println("Grade created :) ");
+      // System.out.println("Grade created :) ");
     } catch (SQLException e) {
       e.printStackTrace();
     }

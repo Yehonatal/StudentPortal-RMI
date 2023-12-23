@@ -18,6 +18,11 @@ public class Enroll implements Serializable {
     this.Grade = G;
   }
 
+  public Enroll(int ci, int si) {
+    this.studentId = si;
+    this.courseId = ci;
+  }
+
   public int getCourseId() {
     return courseId;
   }

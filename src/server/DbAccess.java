@@ -37,7 +37,7 @@ public class DbAccess {
   }
 
   public boolean dbAccessor() {
-    System.out.println("from dbAccessor");
+    // System.out.println("from dbAccessor");
     switch (userType) {
       case "admin":
         if (accessType.equals("select")) {
@@ -54,8 +54,8 @@ public class DbAccess {
   }
 
   public boolean selectData(String psw, String table) {
-    System.out.println("from select Data");
-    System.out.println(firstName);
+    // System.out.println("from select Data");
+    // System.out.println(firstName);
 
     ResultSet result;
     try {
