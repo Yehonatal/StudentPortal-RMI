@@ -29,14 +29,6 @@
     |   |   |   |
     |   |   |   |-- LoginPanel.java
     |   |   |   |-- CreateAccountPanel.java
-    |   |   |
-    |   |   |-- service/
-    |   |       |-- StudentService.java       // Interface for student-related functionalities
-    |   |       |-- AdminService.java         // Interface for admin-related functionalities
-    |   |       |
-    |   |       |-- impl/
-    |   |           |-- StudentServiceImpl.java // Implementation of StudentService
-    |   |           |-- AdminServiceImpl.java   // Implementation of AdminService
     |   |
     |   |-- .env
     |
