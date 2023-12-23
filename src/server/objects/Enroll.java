@@ -6,6 +6,8 @@ public class Enroll {
   public int studentId;
   public String Grade = "A";
 
+  public Enroll() {}
+
   public Enroll(int ci, int si, String G) {
     this.courseId = ci;
     this.studentId = si;

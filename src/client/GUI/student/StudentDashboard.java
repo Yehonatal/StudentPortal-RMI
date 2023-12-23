@@ -2,21 +2,32 @@ package client.GUI.student;
 
 import client.App;
 import client.GUI.LoginPanel;
+import client.RMIClient;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.rmi.RemoteException;
 import java.sql.*;
+import java.util.List;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import server.DbStudentPortal;
+import server.objects.Course;
+import server.objects.Enrolled;
 
 public class StudentDashboard extends JPanel {
+
+  private static DbStudentPortal studentPortalService;
+
+  // Table Population lists
+  List<Course> courses;
+  List<Enrolled> coursesEnrolled;
 
   private App parentApp;
   private JTabbedPane tabbedPane;
 
   Connection con;
   Statement statement;
-  String studId;
+  int studId;
 
   // Components for enrolling in courses
   private JTable availableCoursesTable;
@@ -26,13 +37,14 @@ public class StudentDashboard extends JPanel {
   // Component for viewing enrolled courses and grades
   private JTable enrolledCoursesTable;
 
-  public StudentDashboard(App app, String psw) {
-    this.studId = psw;
+  public StudentDashboard(App app, int studId) throws RemoteException {
+    studentPortalService = RMIClient.portalServices;
+    this.studId = studId;
     parentApp = app;
     setupUI();
   }
 
-  public void setupUI() {
+  public void setupUI() throws RemoteException {
     setLayout(new BorderLayout());
     JLabel titleLabel = new JLabel("Student Dashboard");
     titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -71,15 +83,14 @@ public class StudentDashboard extends JPanel {
     return button;
   }
 
-  private void setupViewGrades() {
+  private void setupViewGrades() throws RemoteException {
     JPanel viewGradesPanel = new JPanel(new BorderLayout());
 
-    // Create a table to display enrolled courses and grades
     DefaultTableModel enrolledCoursesTableModel = new DefaultTableModel();
-    enrolledCoursesTableModel.addColumn("Student Name");
+    enrolledCoursesTableModel.addColumn("Student FName");
+    enrolledCoursesTableModel.addColumn("Student LName");
+    enrolledCoursesTableModel.addColumn("Course ID");
     enrolledCoursesTableModel.addColumn("Student ID");
-    enrolledCoursesTableModel.addColumn("Student Status");
-    enrolledCoursesTableModel.addColumn("Course Code");
     enrolledCoursesTableModel.addColumn("Grade");
     enrolledCoursesTable = new JTable(enrolledCoursesTableModel);
     JScrollPane enrolledCoursesScrollPane = new JScrollPane(
@@ -95,18 +106,38 @@ public class StudentDashboard extends JPanel {
       viewGradesPanel,
       "View your grades"
     );
+
     // Populate enrolled courses and grades
     populateEnrolledCoursesTable();
   }
 
-  private void populateEnrolledCoursesTable() {}
+  private void populateEnrolledCoursesTable() throws RemoteException {
+    coursesEnrolled = studentPortalService.retrieveCoursesEnrolled(studId);
 
-  private void setupEnrollToCourse() {
+    DefaultTableModel studentsEnrolledModel = (DefaultTableModel) enrolledCoursesTable.getModel();
+
+    for (Enrolled courseEnrolled : coursesEnrolled) {
+      System.out.println("Enrolled Course: " + courseEnrolled); // Debug print
+
+      studentsEnrolledModel.addRow(
+        new Object[] {
+          courseEnrolled.getFirstName(),
+          courseEnrolled.getLastName(),
+          courseEnrolled.getCourseId(),
+          courseEnrolled.getStudentId(),
+          courseEnrolled.getGrade(),
+        }
+      );
+    }
+  }
+
+  private void setupEnrollToCourse() throws RemoteException {
     JPanel enrollToCoursePanel = new JPanel(new BorderLayout());
     DefaultTableModel availableCoursesTableModel = new DefaultTableModel();
     availableCoursesTableModel.addColumn("Course ID");
-    availableCoursesTableModel.addColumn("Course Name");
-    availableCoursesTableModel.addColumn("Credit");
+    availableCoursesTableModel.addColumn("Course Title");
+    availableCoursesTableModel.addColumn("Course Code");
+    availableCoursesTableModel.addColumn("Course Credit");
     availableCoursesTable = new JTable(availableCoursesTableModel);
     JScrollPane availableCoursesScrollPane = new JScrollPane(
       availableCoursesTable
@@ -133,9 +164,24 @@ public class StudentDashboard extends JPanel {
     populateAvailableCoursesTable();
   }
 
-  private void populateAvailableCoursesTable() {}
+  private void populateAvailableCoursesTable() throws RemoteException {
+    courses = studentPortalService.retrieveCourses();
 
-  private Object enrollInCourse() {
-    return null;
+    DefaultTableModel model = (DefaultTableModel) availableCoursesTable.getModel();
+
+    for (Course course : courses) {
+      model.addRow(
+        new Object[] {
+          course.getCourseId(),
+          course.getCourseTitle(),
+          course.getCourseCode(),
+          course.getCourseCredit(),
+        }
+      );
+    }
+  }
+
+  private void enrollInCourse() {
+    // TODO: ENROLL IN COURSE IMPLEMENTATION
   }
 }

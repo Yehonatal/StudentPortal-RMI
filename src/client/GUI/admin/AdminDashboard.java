@@ -160,7 +160,7 @@ public class AdminDashboard extends JPanel {
     studentsEnrolledTable.setDefaultEditor(Object.class, null);
 
     // Populate enrolled students
-    // populateStudentsEnrolledTable();
+    populateStudentsEnrolledTable();
 
     JPanel tablePanel = new JPanel(new BorderLayout());
     tablePanel.add(enrolledTableScrollPane, BorderLayout.CENTER);
@@ -172,6 +172,8 @@ public class AdminDashboard extends JPanel {
     splitPane.setBottomComponent(assignGradeFormPanel());
     assignGradesPanel.add(splitPane, BorderLayout.CENTER);
   }
+
+  private void populateStudentsEnrolledTable() {}
 
   private Component assignGradeFormPanel() {
     JPanel formPanel = new JPanel(new GridBagLayout());
@@ -229,7 +231,7 @@ public class AdminDashboard extends JPanel {
     availableCoursesTable.setDefaultEditor(Object.class, null);
 
     // Populate available courses
-    // populateAvailableCoursesTable();
+    populateAvailableCoursesTable();
 
     JPanel tablePanel = new JPanel(new BorderLayout());
     tablePanel.add(availableCoursesScrollPane, BorderLayout.CENTER);
@@ -241,6 +243,8 @@ public class AdminDashboard extends JPanel {
     splitPane.setBottomComponent(createCourseFormPanel());
     createCoursePanel.add(splitPane, BorderLayout.CENTER);
   }
+
+  private void populateAvailableCoursesTable() {}
 
   private Component createCourseFormPanel() {
     JPanel formPanel = new JPanel(new GridBagLayout());

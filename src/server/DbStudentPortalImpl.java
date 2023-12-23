@@ -12,6 +12,7 @@ import java.util.List;
 import server.objects.Admin;
 import server.objects.Course;
 import server.objects.Enroll;
+import server.objects.Enrolled;
 import server.objects.LoginData;
 import server.objects.Student;
 
@@ -88,6 +89,14 @@ public class DbStudentPortalImpl
     "INSERT INTO " +
     TABLE_ENROLL +
     " (column1, column2, ...) VALUES (?, ?, ...)";
+
+  private static final String QUERY_ENROLLED_COURSES =
+    "SELECT StudentLog.firstName, StudentLog.lastName, StudentLog.studentId, EnrollmentsLog.courseId, EnrollmentsLog.Grade " +
+    "FROM StudentLog INNER JOIN EnrollmentsLog ON StudentLog.studentId = EnrollmentsLog.studentId " +
+    "WHERE StudentLog.studentId = ?";
+
+  private static final String QUERY_GET_STUDENT_ID =
+    "SELECT studentId FROM StudentLog WHERE firstName = ? AND lastName = ? AND password = ?";
 
   @Override
   public List<Admin> retrieveAdmins() throws RemoteException {
@@ -169,7 +178,37 @@ public class DbStudentPortalImpl
     } catch (SQLException e) {
       e.printStackTrace();
     }
-    System.out.println("Retrieved courses: " + courses);
+    return courses;
+  }
+
+  @Override
+  public List<Enrolled> retrieveCoursesEnrolled(int studId)
+    throws RemoteException {
+    List<Enrolled> courses = new ArrayList<>();
+    try (
+      Connection connection = DbConnector.getConnection();
+      PreparedStatement preparedStatement = connection.prepareStatement(
+        QUERY_ENROLLED_COURSES
+      )
+    ) {
+      preparedStatement.setInt(1, studId);
+
+      try (ResultSet resultSet = preparedStatement.executeQuery()) {
+        while (resultSet.next()) {
+          Enrolled course = new Enrolled();
+          course.setFirstName(resultSet.getString("firstName"));
+          course.setLastName(resultSet.getString("lastName"));
+          course.setCourseId(resultSet.getInt("courseId"));
+          course.setStudentId(resultSet.getInt("studentId"));
+          course.setGrade(resultSet.getString("Grade"));
+
+          courses.add(course);
+        }
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+    System.out.println("Retrieved Enrolled courses: " + courses + " " + studId);
     return courses;
   }
 
@@ -374,5 +413,31 @@ public class DbStudentPortalImpl
     );
 
     return access.dbAccessor();
+  }
+
+  @Override
+  public int retrieveStudentId(String fname, String lname, String password) {
+    int studentId = -1; // Default value indicating no match found
+
+    try (
+      Connection connection = DbConnector.getConnection();
+      PreparedStatement preparedStatement = connection.prepareStatement(
+        QUERY_GET_STUDENT_ID
+      )
+    ) {
+      preparedStatement.setString(1, fname);
+      preparedStatement.setString(2, lname);
+      preparedStatement.setString(3, password);
+
+      try (ResultSet resultSet = preparedStatement.executeQuery()) {
+        if (resultSet.next()) {
+          studentId = resultSet.getInt("studentId");
+        }
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
+    return studentId;
   }
 }

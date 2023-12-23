@@ -30,6 +30,7 @@ public class LoginPanel extends JPanel {
   static char[] passwordChars;
   static String password;
   static StringBuilder userType;
+  static int studID;
 
   public LoginPanel(App app) throws RemoteException {
     studentPortalService = RMIClient.portalServices;
@@ -143,9 +144,21 @@ public class LoginPanel extends JPanel {
                 parentApp.switchPanel(new AdminDashboard(parentApp));
                 System.out.println("to admin side");
               } else if (studentCheckBox.isSelected()) {
-                parentApp.switchPanel(
-                  new StudentDashboard(parentApp, password)
-                );
+                try {
+                  String fname = username.split(" ")[0];
+                  String lname = username.split(" ")[1];
+                  studID =
+                    studentPortalService.retrieveStudentId(
+                      fname,
+                      lname,
+                      password
+                    );
+                  parentApp.switchPanel(
+                    new StudentDashboard(parentApp, studID)
+                  );
+                } catch (RemoteException e1) {
+                  e1.printStackTrace();
+                }
                 System.out.println("to student side");
               }
             } else {

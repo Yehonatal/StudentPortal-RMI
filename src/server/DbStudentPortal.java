@@ -6,6 +6,7 @@ import java.util.List;
 import server.objects.Admin;
 import server.objects.Course;
 import server.objects.Enroll;
+import server.objects.Enrolled;
 import server.objects.LoginData;
 import server.objects.Student;
 
@@ -13,6 +14,7 @@ public interface DbStudentPortal extends Remote {
   List<Admin> retrieveAdmins() throws RemoteException;
   List<Student> retrieveStudents() throws RemoteException;
   List<Course> retrieveCourses() throws RemoteException;
+  List<Enrolled> retrieveCoursesEnrolled(int studId) throws RemoteException;
 
   // Creator
   void createAdmin(Admin admin) throws RemoteException;
@@ -34,4 +36,6 @@ public interface DbStudentPortal extends Remote {
 
   // login methods
   boolean getLoginStatus(LoginData data) throws RemoteException;
+  int retrieveStudentId(String fname, String lname, String password)
+    throws RemoteException;
 }

@@ -73,8 +73,6 @@ public class DbAccess {
       result = preparedStatement.executeQuery();
 
       if (result.next()) {
-        // If a row is found, return true
-        System.out.println("from the select data result found condition");
         return true;
       }
     } catch (SQLException e) {
