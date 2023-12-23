@@ -141,7 +141,11 @@ public class LoginPanel extends JPanel {
 
               // Switch to the appropriate panel based on user type
               if (adminCheckBox.isSelected()) {
-                parentApp.switchPanel(new AdminDashboard(parentApp));
+                try {
+                  parentApp.switchPanel(new AdminDashboard(parentApp));
+                } catch (RemoteException e1) {
+                  e1.printStackTrace();
+                }
                 System.out.println("to admin side");
               } else if (studentCheckBox.isSelected()) {
                 try {

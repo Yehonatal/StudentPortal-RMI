@@ -15,6 +15,7 @@ public interface DbStudentPortal extends Remote {
   List<Student> retrieveStudents() throws RemoteException;
   List<Course> retrieveCourses() throws RemoteException;
   List<Enrolled> retrieveCoursesEnrolled(int studId) throws RemoteException;
+  List<Enrolled> retrieveCoursesEnrolled() throws RemoteException;
 
   // Creator
   void createAdmin(Admin admin) throws RemoteException;
@@ -33,6 +34,7 @@ public interface DbStudentPortal extends Remote {
 
   // enroll to courses
   void enrollToCourse(Enroll enroll) throws RemoteException;
+  void enrollUpdate(Enroll enroll) throws RemoteException;
 
   // login methods
   boolean getLoginStatus(LoginData data) throws RemoteException;

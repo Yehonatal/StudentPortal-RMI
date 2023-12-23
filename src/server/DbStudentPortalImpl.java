@@ -53,11 +53,11 @@ public class DbStudentPortalImpl
   private static final String QUERY_INSERT_STUDENT =
     "INSERT INTO " +
     TABLE_STUDENT +
-    " (column1, column2, ...) VALUES (?, ?, ...)";
+    " (firstName, lastName, email, password) VALUES (?, ?, ?, ?)";
   private static final String QUERY_INSERT_COURSE =
     "INSERT INTO " +
     TABLE_COURSE +
-    " (column1, column2, ...) VALUES (?, ?, ...)";
+    " (courseTitle, courseCode, courseCredit) VALUES (?, ?, ?)";
 
   private static final String QUERY_DELETE_ADMIN =
     "DELETE FROM " + TABLE_ADMIN + " WHERE " + COLUMN_ADMIN_ID + " = ?";
@@ -88,12 +88,18 @@ public class DbStudentPortalImpl
   private static final String QUERY_ENROLL_TO_COURSE =
     "INSERT INTO " +
     TABLE_ENROLL +
-    " (column1, column2, ...) VALUES (?, ?, ...)";
-
-  private static final String QUERY_ENROLLED_COURSES =
+    " (StudentId, CourseId, Grade) VALUES (?, ?, ?)";
+  private static final String QUERY_ENROLL_UPDATE =
+    "UPDATE EnrollmentsLog " +
+    "SET Grade = ? " +
+    "WHERE StudentId = ? AND CourseId = ?";
+  private static final String QUERY_ENROLLED_COURSES_FOR_STUD =
     "SELECT StudentLog.firstName, StudentLog.lastName, StudentLog.studentId, EnrollmentsLog.courseId, EnrollmentsLog.Grade " +
     "FROM StudentLog INNER JOIN EnrollmentsLog ON StudentLog.studentId = EnrollmentsLog.studentId " +
     "WHERE StudentLog.studentId = ?";
+  private static final String QUERY_ENROLLED_COURSES =
+    "SELECT StudentLog.firstName, StudentLog.lastName, StudentLog.studentId, EnrollmentsLog.courseId, EnrollmentsLog.Grade " +
+    "FROM StudentLog INNER JOIN EnrollmentsLog ON StudentLog.studentId = EnrollmentsLog.studentId ";
 
   private static final String QUERY_GET_STUDENT_ID =
     "SELECT studentId FROM StudentLog WHERE firstName = ? AND lastName = ? AND password = ?";
@@ -188,7 +194,7 @@ public class DbStudentPortalImpl
     try (
       Connection connection = DbConnector.getConnection();
       PreparedStatement preparedStatement = connection.prepareStatement(
-        QUERY_ENROLLED_COURSES
+        QUERY_ENROLLED_COURSES_FOR_STUD
       )
     ) {
       preparedStatement.setInt(1, studId);
@@ -209,6 +215,32 @@ public class DbStudentPortalImpl
       e.printStackTrace();
     }
     System.out.println("Retrieved Enrolled courses: " + courses + " " + studId);
+    return courses;
+  }
+
+  public List<Enrolled> retrieveCoursesEnrolled() throws RemoteException {
+    List<Enrolled> courses = new ArrayList<>();
+    try (
+      Connection connection = DbConnector.getConnection();
+      PreparedStatement preparedStatement = connection.prepareStatement(
+        QUERY_ENROLLED_COURSES
+      )
+    ) {
+      try (ResultSet resultSet = preparedStatement.executeQuery()) {
+        while (resultSet.next()) {
+          Enrolled course = new Enrolled();
+          course.setFirstName(resultSet.getString("firstName"));
+          course.setLastName(resultSet.getString("lastName"));
+          course.setCourseId(resultSet.getInt("courseId"));
+          course.setStudentId(resultSet.getInt("studentId"));
+          course.setGrade(resultSet.getString("Grade"));
+
+          courses.add(course);
+        }
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
     return courses;
   }
 
@@ -247,6 +279,7 @@ public class DbStudentPortalImpl
 
       // Execute the INSERT query
       preparedStatement.executeUpdate();
+      System.out.println("Created student :)");
     } catch (SQLException e) {
       e.printStackTrace();
     }
@@ -266,6 +299,7 @@ public class DbStudentPortalImpl
 
       // Execute the INSERT query
       preparedStatement.executeUpdate();
+      System.out.println("Course Created :)");
     } catch (SQLException e) {
       e.printStackTrace();
     }
@@ -392,9 +426,28 @@ public class DbStudentPortalImpl
         QUERY_ENROLL_TO_COURSE
       )
     ) {
-      preparedStatement.setInt(1, enroll.getCourseId());
-      preparedStatement.setInt(2, enroll.getStudentId());
+      preparedStatement.setInt(1, enroll.getStudentId());
+      preparedStatement.setInt(2, enroll.getCourseId());
       preparedStatement.setString(3, enroll.getGrade());
+
+      // Execute the INSERT query
+      preparedStatement.executeUpdate();
+      System.out.println("Grade created :) ");
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+  }
+
+  public void enrollUpdate(Enroll enroll) throws RemoteException {
+    try (
+      Connection connection = DbConnector.getConnection();
+      PreparedStatement preparedStatement = connection.prepareStatement(
+        QUERY_ENROLL_UPDATE
+      )
+    ) {
+      preparedStatement.setString(1, enroll.getGrade());
+      preparedStatement.setInt(2, enroll.getStudentId());
+      preparedStatement.setInt(3, enroll.getCourseId());
 
       // Execute the INSERT query
       preparedStatement.executeUpdate();

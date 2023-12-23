@@ -2,14 +2,23 @@ package client.GUI.admin;
 
 import client.App;
 import client.GUI.LoginPanel;
+import client.RMIClient;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.rmi.RemoteException;
 import java.sql.*;
+import java.util.List;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import server.DbStudentPortal;
+import server.objects.Course;
+import server.objects.Enroll;
+import server.objects.Enrolled;
+import server.objects.Student;
 
 public class AdminDashboard extends JPanel {
+
+  private static DbStudentPortal studentPortalService;
 
   private App parentApp;
   private JTabbedPane tabbedPane;
@@ -20,8 +29,8 @@ public class AdminDashboard extends JPanel {
   // Components for adding students
   private JTextField studentFNameField;
   private JTextField studentLNameField;
-  private JTextField studentIdField;
-  private JCheckBox studentStatusCheckBox;
+  private JTextField studentEmailField;
+  private JTextField studentPswField;
 
   // Components for creating courses
   private JTable availableCoursesTable;
@@ -35,12 +44,16 @@ public class AdminDashboard extends JPanel {
   private JTextField assignCourseIdField;
   private JTextField gradeField;
 
-  public AdminDashboard(App app) {
+  List<Course> courses;
+  List<Enrolled> coursesEnrolled;
+
+  public AdminDashboard(App app) throws RemoteException {
+    studentPortalService = RMIClient.portalServices;
     parentApp = app;
     setupUI();
   }
 
-  public void setupUI() {
+  public void setupUI() throws RemoteException {
     setLayout(new BorderLayout());
     JLabel titleLabel = new JLabel("Admin Dashboard");
     titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -73,7 +86,6 @@ public class AdminDashboard extends JPanel {
     return buttonPanel;
   }
 
-  // Creator Functions
   private JButton createButton(String string, ActionListener actionListener) {
     JButton button = new JButton(string);
     button.setFont(new Font("Arial", Font.BOLD, 12));
@@ -137,7 +149,7 @@ public class AdminDashboard extends JPanel {
     }
   }
 
-  private void setupAssignGradesTab() {
+  private void setupAssignGradesTab() throws RemoteException {
     JPanel assignGradesPanel = new JPanel(new BorderLayout());
     tabbedPane.addTab(
       "Assign Grades",
@@ -147,10 +159,10 @@ public class AdminDashboard extends JPanel {
     );
 
     DefaultTableModel studentsEnrolledModel = new DefaultTableModel();
-    studentsEnrolledModel.addColumn("Student Name");
-    studentsEnrolledModel.addColumn("Student ID");
-    studentsEnrolledModel.addColumn("Student Status");
-    studentsEnrolledModel.addColumn("Course Code");
+    studentsEnrolledModel.addColumn("Student fName");
+    studentsEnrolledModel.addColumn("Student LName");
+    studentsEnrolledModel.addColumn("Course Id");
+    studentsEnrolledModel.addColumn("Student Id");
     studentsEnrolledModel.addColumn("Grade");
     studentsEnrolledTable = new JTable(studentsEnrolledModel);
     JScrollPane enrolledTableScrollPane = new JScrollPane(
@@ -173,7 +185,24 @@ public class AdminDashboard extends JPanel {
     assignGradesPanel.add(splitPane, BorderLayout.CENTER);
   }
 
-  private void populateStudentsEnrolledTable() {}
+  private void populateStudentsEnrolledTable() throws RemoteException {
+    coursesEnrolled = studentPortalService.retrieveCoursesEnrolled();
+
+    DefaultTableModel studentsEnrolledModel = (DefaultTableModel) studentsEnrolledTable.getModel();
+    // Clear existing rows from the table
+    studentsEnrolledModel.setRowCount(0);
+    for (Enrolled courseEnrolled : coursesEnrolled) {
+      studentsEnrolledModel.addRow(
+        new Object[] {
+          courseEnrolled.getFirstName(),
+          courseEnrolled.getLastName(),
+          courseEnrolled.getCourseId(),
+          courseEnrolled.getStudentId(),
+          courseEnrolled.getGrade(),
+        }
+      );
+    }
+  }
 
   private Component assignGradeFormPanel() {
     JPanel formPanel = new JPanel(new GridBagLayout());
@@ -183,20 +212,26 @@ public class AdminDashboard extends JPanel {
     gradeField = createTextField(5);
     JButton assignGradeButton = createButton(
       "Assign Grade",
-      e -> assignGrade()
+      e -> {
+        try {
+          assignGrade();
+        } catch (RemoteException e1) {
+          e1.printStackTrace();
+        }
+      }
     );
 
     addComponentsToPanel(
       formPanel,
       assignStudentIdField,
-      "Select Student:",
+      "Select Course Id:",
       0,
       0
     );
     addComponentsToPanel(
       formPanel,
       assignCourseIdField,
-      "Select Course:",
+      "Select Student Id:",
       0,
       1
     );
@@ -206,11 +241,19 @@ public class AdminDashboard extends JPanel {
     return formPanel;
   }
 
-  private Object assignGrade() {
-    return null;
+  private void assignGrade() throws RemoteException {
+    int studentId = Integer.parseInt(assignStudentIdField.getText());
+    int courseId = Integer.parseInt(assignCourseIdField.getText());
+    String grade = gradeField.getText();
+
+    Enroll enroll = new Enroll(studentId, courseId, grade);
+
+    studentPortalService.enrollUpdate(enroll);
+    clearFormFields(assignStudentIdField, assignCourseIdField, gradeField);
+    populateStudentsEnrolledTable();
   }
 
-  private void setupCreateCoursesTab() {
+  private void setupCreateCoursesTab() throws RemoteException {
     JPanel createCoursePanel = new JPanel(new BorderLayout());
     tabbedPane.addTab(
       "Create Courses",
@@ -221,7 +264,8 @@ public class AdminDashboard extends JPanel {
 
     DefaultTableModel availableCoursesTableModel = new DefaultTableModel();
     availableCoursesTableModel.addColumn("Course ID");
-    availableCoursesTableModel.addColumn("Course Name");
+    availableCoursesTableModel.addColumn("Course Title");
+    availableCoursesTableModel.addColumn("Course Code");
     availableCoursesTableModel.addColumn("Credit");
     availableCoursesTable = new JTable(availableCoursesTableModel);
     JScrollPane availableCoursesScrollPane = new JScrollPane(
@@ -244,7 +288,24 @@ public class AdminDashboard extends JPanel {
     createCoursePanel.add(splitPane, BorderLayout.CENTER);
   }
 
-  private void populateAvailableCoursesTable() {}
+  private void populateAvailableCoursesTable() throws RemoteException {
+    courses = studentPortalService.retrieveCourses();
+
+    DefaultTableModel model = (DefaultTableModel) availableCoursesTable.getModel();
+    // Clear existing rows from the table
+    model.setRowCount(0);
+
+    for (Course course : courses) {
+      model.addRow(
+        new Object[] {
+          course.getCourseId(),
+          course.getCourseTitle(),
+          course.getCourseCode(),
+          course.getCourseCredit(),
+        }
+      );
+    }
+  }
 
   private Component createCourseFormPanel() {
     JPanel formPanel = new JPanel(new GridBagLayout());
@@ -254,19 +315,33 @@ public class AdminDashboard extends JPanel {
     courseCreditField = createTextField(20);
     JButton createCourseButton = createButton(
       "Create Course",
-      e -> createCourse()
+      e -> {
+        try {
+          createCourse();
+        } catch (RemoteException e1) {
+          e1.printStackTrace();
+        }
+      }
     );
 
-    addComponentsToPanel(formPanel, courseNameField, "Course Code:", 0, 0);
-    addComponentsToPanel(formPanel, courseCodeField, "Course Title:", 0, 1);
+    addComponentsToPanel(formPanel, courseCodeField, "Course Code:", 0, 0);
+    addComponentsToPanel(formPanel, courseNameField, "Course Title:", 0, 1);
     addComponentsToPanel(formPanel, courseCreditField, "Course Credit:", 0, 2);
     addComponentsToPanel(formPanel, createCourseButton, 0, 3);
 
     return formPanel;
   }
 
-  private Object createCourse() {
-    return null;
+  private void createCourse() throws RemoteException {
+    String courseCode = courseCodeField.getText();
+    String courseName = courseNameField.getText();
+    int courseCredit = Integer.parseInt(courseCreditField.getText());
+
+    Course course = new Course(courseName, courseCode, courseCredit);
+
+    studentPortalService.createCourse(course);
+    clearFormFields(courseCodeField, courseNameField, courseCreditField);
+    populateAvailableCoursesTable();
   }
 
   private void setupAddStudentTab() {
@@ -280,9 +355,18 @@ public class AdminDashboard extends JPanel {
 
     studentFNameField = createTextField(20);
     studentLNameField = createTextField(20);
-    studentIdField = createTextField(20);
-    studentStatusCheckBox = new JCheckBox("Active");
-    JButton addStudentButton = createButton("Add Student", e -> addStudent());
+    studentEmailField = createTextField(20);
+    studentPswField = createTextField(20);
+    JButton addStudentButton = createButton(
+      "Add Student",
+      e -> {
+        try {
+          addStudent();
+        } catch (RemoteException e1) {
+          e1.printStackTrace();
+        }
+      }
+    );
 
     addComponentsToPanel(
       addStudentPanel,
@@ -298,18 +382,53 @@ public class AdminDashboard extends JPanel {
       0,
       1
     );
-    addComponentsToPanel(addStudentPanel, studentIdField, "Student ID:", 0, 2);
     addComponentsToPanel(
       addStudentPanel,
-      studentStatusCheckBox,
-      "Student Status:",
+      studentEmailField,
+      "Student Email:",
+      0,
+      2
+    );
+    addComponentsToPanel(
+      addStudentPanel,
+      studentPswField,
+      "Student Password:",
       0,
       3
     );
+
     addComponentsToPanel(addStudentPanel, addStudentButton, 1, 4);
   }
 
-  private Object addStudent() {
-    return null;
+  private void addStudent() throws RemoteException {
+    String studentFName = studentFNameField.getText();
+    String studentLName = studentLNameField.getText();
+    String studentEmail = studentEmailField.getText();
+    String studentPassword = studentPswField.getText();
+
+    Student student = new Student(
+      studentFName,
+      studentLName,
+      studentEmail,
+      studentPassword
+    );
+
+    studentPortalService.createStudent(student);
+    clearFormFields(
+      studentFNameField,
+      studentLNameField,
+      studentEmailField,
+      studentPswField
+    );
+  }
+
+  private void clearFormFields(Component... components) {
+    for (Component component : components) {
+      if (component instanceof JTextField) {
+        ((JTextField) component).setText("");
+      } else if (component instanceof JCheckBox) {
+        ((JCheckBox) component).setSelected(false);
+      }
+    }
   }
 }

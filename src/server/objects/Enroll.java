@@ -1,16 +1,20 @@
 package server.objects;
 
-public class Enroll {
+import java.io.Serializable;
 
-  public int courseId;
+public class Enroll implements Serializable {
+
+  private static final long serialVersionUID = 1L;
+
   public int studentId;
+  public int courseId;
   public String Grade = "A";
 
   public Enroll() {}
 
   public Enroll(int ci, int si, String G) {
-    this.courseId = ci;
     this.studentId = si;
+    this.courseId = ci;
     this.Grade = G;
   }
 
